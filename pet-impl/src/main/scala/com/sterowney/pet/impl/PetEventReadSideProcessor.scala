@@ -29,7 +29,7 @@ class PetEventReadSideProcessor(session: CassandraSession, readSide: CassandraRe
         CREATE TABLE IF NOT EXISTS pet (
           petId timeuuid PRIMARY KEY,
           name text,
-          categoryId double
+          categoryId bigint
         )
       """)
     } yield Done

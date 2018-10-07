@@ -6,6 +6,8 @@ import scala.collection.immutable.Seq
 
 object PetSerializerRegistry extends JsonSerializerRegistry {
   override def serializers: Seq[JsonSerializer[_]] = Seq(
-    JsonSerializer[PetState]
+    JsonSerializer[PetState],
+    JsonSerializer[CreatePet],
+    JsonSerializer[PetCreated]
   )
 }

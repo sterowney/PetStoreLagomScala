@@ -1,8 +1,10 @@
 package com.sterowney.pet.impl
 
+
 import java.util.UUID
 
 import akka.NotUsed
+import com.datastax.driver.core.utils.UUIDs
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.transport.NotFound
 import com.sterowney.pet.api.PetService
@@ -14,7 +16,7 @@ import scala.concurrent.ExecutionContext
 class PetServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(implicit ec: ExecutionContext) extends PetService {
 
   override def createPet(): ServiceCall[api.CreatePetRequest, api.Pet] = { request =>
-    val petId = UUID.randomUUID()
+    val petId: UUID = UUIDs.timeBased()
     refForPet(petId).ask(CreatePet(Pet(petId, request.name, request.categoryId))).map { _ =>
       api.Pet(petId, request.name, request.categoryId)
     }

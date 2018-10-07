@@ -30,3 +30,7 @@ lazy val `pet-impl` = (project in file("pet-impl"))
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(`pet-api`)
+
+// lagomCassandraCleanOnStart in ThisBuild := true
+// lagomCassandraEnabled in ThisBuild := false
+// lagomUnmanagedServices in ThisBuild := Map("cas_native" -> "http://localhost:9042")
