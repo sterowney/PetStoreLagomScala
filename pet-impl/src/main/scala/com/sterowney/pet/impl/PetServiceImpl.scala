@@ -1,44 +1,23 @@
 package com.sterowney.pet.impl
 
-import com.sterowney.pet.api
-import com.sterowney.pet.api.{PetService}
+import java.util.UUID
+
 import com.lightbend.lagom.scaladsl.api.ServiceCall
-import com.lightbend.lagom.scaladsl.api.broker.Topic
-import com.lightbend.lagom.scaladsl.broker.TopicProducer
-import com.lightbend.lagom.scaladsl.persistence.{EventStreamElement, PersistentEntityRegistry}
+import com.sterowney.pet.api.PetService
+import com.lightbend.lagom.scaladsl.persistence.PersistentEntityRegistry
+import com.sterowney.pet.api
 
-/**
-  * Implementation of the PetService.
-  */
-class PetServiceImpl(persistentEntityRegistry: PersistentEntityRegistry) extends PetService {
+import scala.concurrent.ExecutionContext
 
-  override def hello(id: String) = ServiceCall { _ =>
-    // Look up the Pet entity for the given ID.
-    val ref = persistentEntityRegistry.refFor[PetEntity](id)
+class PetServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(implicit ec: ExecutionContext) extends PetService {
 
-    // Ask the entity the Hello command.
-    ref.ask(Hello(id))
-  }
-
-  override def useGreeting(id: String) = ServiceCall { request =>
-    // Look up the Pet entity for the given ID.
-    val ref = persistentEntityRegistry.refFor[PetEntity](id)
-
-    // Tell the entity to use the greeting message specified.
-    ref.ask(UseGreetingMessage(request.message))
-  }
-
-
-  override def greetingsTopic(): Topic[api.GreetingMessageChanged] =
-    TopicProducer.singleStreamWithOffset {
-      fromOffset =>
-        persistentEntityRegistry.eventStream(PetEvent.Tag, fromOffset)
-          .map(ev => (convertEvent(ev), ev.offset))
-    }
-
-  private def convertEvent(helloEvent: EventStreamElement[PetEvent]): api.GreetingMessageChanged = {
-    helloEvent.event match {
-      case GreetingMessageChanged(msg) => api.GreetingMessageChanged(helloEvent.entityId, msg)
+  override def createPet(): ServiceCall[api.CreatePetRequest, api.Pet] = { request =>
+    val petId = UUID.randomUUID()
+    refForPet(petId).ask(CreatePet(Pet(petId, request.name, request.categoryId))).map { _ =>
+      api.Pet(petId, request.name, request.categoryId)
     }
   }
+
+  private def refForPet(petId: UUID) =
+    persistentEntityRegistry.refFor[PetEntity](petId.toString)
 }

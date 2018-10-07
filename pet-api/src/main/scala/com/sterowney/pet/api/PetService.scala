@@ -1,92 +1,33 @@
 package com.sterowney.pet.api
 
-import akka.{Done, NotUsed}
-import com.lightbend.lagom.scaladsl.api.broker.Topic
-import com.lightbend.lagom.scaladsl.api.broker.kafka.{KafkaProperties, PartitionKeyStrategy}
+import java.util.UUID
+
+import com.lightbend.lagom.scaladsl.api.transport.Method
 import com.lightbend.lagom.scaladsl.api.{Service, ServiceCall}
 import play.api.libs.json.{Format, Json}
 
-object PetService  {
-  val TOPIC_NAME = "greetings"
-}
-
-/**
-  * The Pet service interface.
-  * <p>
-  * This describes everything that Lagom needs to know about how to serve and
-  * consume the PetService.
-  */
 trait PetService extends Service {
 
-  /**
-    * Example: curl http://localhost:9000/api/hello/Alice
-    */
-  def hello(id: String): ServiceCall[NotUsed, String]
-
-  /**
-    * Example: curl -H "Content-Type: application/json" -X POST -d '{"message":
-    * "Hi"}' http://localhost:9000/api/hello/Alice
-    */
-  def useGreeting(id: String): ServiceCall[GreetingMessage, Done]
-
-
-  /**
-    * This gets published to Kafka.
-    */
-  def greetingsTopic(): Topic[GreetingMessageChanged]
+  def createPet(): ServiceCall[CreatePetRequest, Pet]
 
   override final def descriptor = {
     import Service._
-    // @formatter:off
     named("pet")
       .withCalls(
-        pathCall("/api/hello/:id", hello _),
-        pathCall("/api/hello/:id", useGreeting _)
-      )
-      .withTopics(
-        topic(PetService.TOPIC_NAME, greetingsTopic)
-          // Kafka partitions messages, messages within the same partition will
-          // be delivered in order, to ensure that all messages for the same user
-          // go to the same partition (and hence are delivered in order with respect
-          // to that user), we configure a partition key strategy that extracts the
-          // name as the partition key.
-          .addProperty(
-            KafkaProperties.partitionKeyStrategy,
-            PartitionKeyStrategy[GreetingMessageChanged](_.name)
-          )
+        restCall(Method.POST, "/api/pet", createPet _)
       )
       .withAutoAcl(true)
-    // @formatter:on
   }
 }
 
-/**
-  * The greeting message class.
-  */
-case class GreetingMessage(message: String)
+case class CreatePetRequest(name: String, categoryId: Long)
 
-object GreetingMessage {
-  /**
-    * Format for converting greeting messages to and from JSON.
-    *
-    * This will be picked up by a Lagom implicit conversion from Play's JSON format to Lagom's message serializer.
-    */
-  implicit val format: Format[GreetingMessage] = Json.format[GreetingMessage]
+case object CreatePetRequest {
+  implicit val format: Format[CreatePetRequest] = Json.format
 }
 
+case class Pet(id: UUID, name: String, categoryId: Long)
 
-
-/**
-  * The greeting message class used by the topic stream.
-  * Different than [[GreetingMessage]], this message includes the name (id).
-  */
-case class GreetingMessageChanged(name: String, message: String)
-
-object GreetingMessageChanged {
-  /**
-    * Format for converting greeting messages to and from JSON.
-    *
-    * This will be picked up by a Lagom implicit conversion from Play's JSON format to Lagom's message serializer.
-    */
-  implicit val format: Format[GreetingMessageChanged] = Json.format[GreetingMessageChanged]
+case object Pet {
+  implicit val format: Format[Pet] = Json.format
 }
