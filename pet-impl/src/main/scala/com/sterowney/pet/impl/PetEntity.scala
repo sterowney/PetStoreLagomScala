@@ -17,6 +17,8 @@ class PetEntity extends PersistentEntity {
     Actions().onCommand[CreatePet, PetCreated] {
       case (CreatePet(pet), ctx, _) =>
         ctx.thenPersist(PetCreated(pet))(ctx.reply)
+    }.onReadOnlyCommand[GetPet.type, Option[Pet]] {
+      case (GetPet, ctx, state) => ctx.reply(state.pet)
     }.onEvent {
       case (PetCreated(pet), _) => PetState(Some(pet))
     }
