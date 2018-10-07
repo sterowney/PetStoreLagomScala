@@ -37,4 +37,5 @@ abstract class PetApplication(context: LagomApplicationContext)
 
   // Register the Pet persistent entity
   persistentEntityRegistry.register(wire[PetEntity])
+  readSide.register(wire[PetEventReadSideProcessor])
 }
