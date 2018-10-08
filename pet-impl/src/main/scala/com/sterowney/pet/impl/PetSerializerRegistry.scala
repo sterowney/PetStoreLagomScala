@@ -8,6 +8,10 @@ object PetSerializerRegistry extends JsonSerializerRegistry {
   override def serializers: Seq[JsonSerializer[_]] = Seq(
     JsonSerializer[PetState],
     JsonSerializer[CreatePet],
-    JsonSerializer[PetCreated]
+    JsonSerializer[UpdatePet],
+    JsonSerializer[DeletePet],
+    JsonSerializer[PetCreated],
+    JsonSerializer[PetUpdated],
+    JsonSerializer[PetDeleted]
   )
 }

@@ -14,11 +14,20 @@ class PetEntity extends PersistentEntity {
   override def initialState: PetState = PetState.initialState
 
   override def behavior: Behavior = {
-    Actions().onCommand[CreatePet, PetCreated] {
-      case (CreatePet(pet), ctx, _) =>
-        ctx.thenPersist(PetCreated(pet))(ctx.reply)
-    }.onEvent {
+    Actions()
+    .onCommand[CreatePet, PetCreated] {
+      case (CreatePet(pet), ctx, _) => ctx.thenPersist(PetCreated(pet))(ctx.reply)
+    }
+    .onCommand[UpdatePet, PetUpdated] {
+      case (UpdatePet(pet), ctx, _) => ctx.thenPersist(PetUpdated(pet))(ctx.reply)
+    }
+    .onCommand[DeletePet, PetDeleted] {
+      case (DeletePet(uuid), ctx, _) => ctx.thenPersist(PetDeleted(uuid))(ctx.reply)
+    }
+    .onEvent {
       case (PetCreated(pet), _) => PetState(Some(pet))
+      case (PetUpdated(pet), _) => PetState(Some(pet))
+      case (PetDeleted(_), _) => PetState(None)
     }
   }
 }
