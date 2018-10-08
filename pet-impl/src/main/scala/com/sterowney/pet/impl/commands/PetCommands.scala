@@ -1,8 +1,10 @@
-package com.sterowney.pet.impl
+package com.sterowney.pet.impl.commands
 
 import java.util.UUID
 
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
+import com.sterowney.pet.impl._
+import com.sterowney.pet.impl.events.{PetCreated, PetDeleted, PetUpdated}
 import play.api.libs.json.{Format, Json}
 
 sealed trait PetCommand[R] extends ReplyType[R]

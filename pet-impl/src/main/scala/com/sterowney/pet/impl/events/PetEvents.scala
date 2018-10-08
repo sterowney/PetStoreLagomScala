@@ -1,8 +1,9 @@
-package com.sterowney.pet.impl
+package com.sterowney.pet.impl.events
 
 import java.util.UUID
 
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEvent, AggregateEventShards, AggregateEventTag}
+import com.sterowney.pet.impl.Pet
 import play.api.libs.json.{Format, Json}
 
 sealed trait PetEvent extends AggregateEvent[PetEvent] {

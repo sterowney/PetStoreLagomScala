@@ -9,6 +9,7 @@ import play.api.libs.ws.ahc.AhcWSComponents
 import com.sterowney.pet.api.PetService
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.softwaremill.macwire._
+import com.sterowney.pet.impl.events.PetEventProcessor
 
 class PetLoader extends LagomApplicationLoader {
 
@@ -38,5 +39,5 @@ abstract class PetApplication(context: LagomApplicationContext)
 
   // Register the Pet persistent entity
   persistentEntityRegistry.register(wire[PetEntity])
-  readSide.register(wire[PetEventReadSideProcessor])
+  readSide.register(wire[PetEventProcessor])
 }

@@ -24,9 +24,14 @@ trait PetService extends Service {
     */
   def getPets(): ServiceCall[NotUsed, Seq[Pet]]
 
-
+  /**
+    * curl -X PUT http://localhost:9000/api/pet/:id -H 'content-type: application/json' -d '{ "name": "Joey", "categoryId": 1 }'
+    */
   def updatePet(id: String): ServiceCall[PetRequest, Pet]
 
+  /**
+    * curl -X DELETE http://localhost:9000/api/pet/:id
+    */
   def deletePet(id: String): ServiceCall[NotUsed, NotUsed]
 
   override final def descriptor = {

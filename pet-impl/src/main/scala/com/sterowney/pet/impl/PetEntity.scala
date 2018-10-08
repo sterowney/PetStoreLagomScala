@@ -3,6 +3,9 @@ package com.sterowney.pet.impl
 import java.util.UUID
 
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity
+import com.sterowney.pet.impl.commands.{CreatePet, DeletePet, PetCommand, UpdatePet}
+import com.sterowney.pet.impl.events.{PetCreated, PetDeleted, PetEvent, PetUpdated}
+import com.sterowney.pet.impl.states.PetState
 import play.api.libs.json._
 
 class PetEntity extends PersistentEntity {

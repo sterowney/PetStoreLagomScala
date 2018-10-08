@@ -10,6 +10,7 @@ import com.lightbend.lagom.scaladsl.api.transport.NotFound
 import com.sterowney.pet.api.{PetRequest, PetService}
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntityRegistry
 import com.sterowney.pet.api
+import com.sterowney.pet.impl.commands.{CreatePet, DeletePet, UpdatePet}
 
 import scala.concurrent.ExecutionContext
 

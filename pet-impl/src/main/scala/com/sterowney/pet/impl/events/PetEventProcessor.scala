@@ -1,4 +1,4 @@
-package com.sterowney.pet.impl
+package com.sterowney.pet.impl.events
 
 import java.util.UUID
 
@@ -6,11 +6,12 @@ import akka.Done
 import com.datastax.driver.core.PreparedStatement
 import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEventTag, ReadSideProcessor}
+import com.sterowney.pet.impl.Pet
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
-class PetEventReadSideProcessor(session: CassandraSession,
-                                readSide: CassandraReadSide)(implicit ec: ExecutionContext) extends ReadSideProcessor[PetEvent] {
+class PetEventProcessor(session: CassandraSession,
+                        readSide: CassandraReadSide)(implicit ec: ExecutionContext) extends ReadSideProcessor[PetEvent] {
 
   private val insertPetStatementPromise = Promise[PreparedStatement]
   private def insertPetStatement: Future[PreparedStatement] = insertPetStatementPromise.future
