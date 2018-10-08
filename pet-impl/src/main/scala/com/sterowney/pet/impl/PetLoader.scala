@@ -31,6 +31,7 @@ abstract class PetApplication(context: LagomApplicationContext)
 
   // Bind the service that this server provides
   override lazy val lagomServer = serverFor[PetService](wire[PetServiceImpl])
+  lazy val petReadRepository = wire[PetReadRepository]
 
   // Register the JSON serializer registry
   override lazy val jsonSerializerRegistry = PetSerializerRegistry

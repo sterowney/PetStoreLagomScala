@@ -9,16 +9,28 @@ import play.api.libs.json.{Format, Json}
 
 trait PetService extends Service {
 
+  /**
+    * curl -X POST http://localhost:9000/api/pet -H 'content-type: application/json' -d '{ "name": "Joey", "categoryId": 1 }'
+    */
   def createPet(): ServiceCall[CreatePetRequest, Pet]
 
+  /**
+    * curl -X GET http://localhost:9000/api/pet/:id
+    */
   def getPet(id: String): ServiceCall[NotUsed, Pet]
+
+  /**
+    * curl -X GET http://localhost:9000/api/pet
+    */
+  def getPets(): ServiceCall[NotUsed, Seq[Pet]]
 
   override final def descriptor = {
     import Service._
     named("pet")
       .withCalls(
         restCall(Method.POST, "/api/pet", createPet _),
-        restCall(Method.GET, "/api/pet/:id", getPet _)
+        restCall(Method.GET, "/api/pet/:id", getPet _),
+        restCall(Method.GET, "/api/pet", getPets _)
       )
       .withAutoAcl(true)
   }

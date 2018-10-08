@@ -13,7 +13,7 @@ import com.sterowney.pet.api
 
 import scala.concurrent.ExecutionContext
 
-class PetServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(implicit ec: ExecutionContext) extends PetService {
+class PetServiceImpl(persistentEntityRegistry: PersistentEntityRegistry, petReadRepository: PetReadRepository)(implicit ec: ExecutionContext) extends PetService {
 
   override def createPet(): ServiceCall[api.CreatePetRequest, api.Pet] = { request =>
     val petId: UUID = UUIDs.timeBased()
@@ -23,9 +23,17 @@ class PetServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(implici
   }
 
   override def getPet(id: String): ServiceCall[NotUsed, api.Pet] = { _ =>
-    refForPet(UUID.fromString(id)).ask(GetPet).map {
+    petReadRepository.getPet(UUID.fromString(id)).map {
       case Some(pet) => api.Pet(pet.id, pet.name, pet.categoryId)
       case None => throw NotFound(s"Pet with id: '$id' does not exist")
+    }
+  }
+
+  override def getPets(): ServiceCall[NotUsed, Seq[api.Pet]] = { _ =>
+    for {
+      pets <- petReadRepository.getPets(10)
+    } yield {
+      pets.map(pet => api.Pet(pet.id, pet.name, pet.categoryId))
     }
   }
 
